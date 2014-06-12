@@ -1,71 +1,172 @@
 package com.knightlight.tribal;
 
+import java.util.Iterator;
+
+import box2dLight.RayHandler;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.utils.Array;
 import com.knightlight.tribal.setting.Setting;
 
 public class SettingRenderer
 {
 	/** Game Setting to render */
 	private final Setting setting;
-	
+
 	/** Camera for game rendering */
 	private OrthographicCamera camera;
-	
+
 	/** SpriteBatch for general drawing */
 	private SpriteBatch batch;
-	
+
 	/** Box2D debug renderer for testing */
 	private Box2DDebugRenderer debugRenderer;
-	
-	/** pixel perfect projection for font rendering */
+
+	/** Font for rendering debug messages */
+	private BitmapFont font;
+
+	/** Box2DLight light rendering object */
+	public RayHandler lightRenderer;
+
+	/** pixel perfect projection */
 	private Matrix4 normalProjection = new Matrix4();
-	
+
 	/** Map scaled projection for game rendering */
 	private Matrix4 gameProjection = new Matrix4();
-	
+
 	public SettingRenderer(Setting s)
 	{
 		setting = s;
-		debugRenderer = new Box2DDebugRenderer();
-		batch = new SpriteBatch();
+
 		camera = new OrthographicCamera(Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
 		normalProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		gameProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
+
+		debugRenderer = new Box2DDebugRenderer();
+
+		font = new BitmapFont();
+		font.setColor(Color.RED);
+
+		// Light renderer setup begin
+		RayHandler.setGammaCorrection(true);
+		RayHandler.useDiffuseLight(true);
+		lightRenderer = new RayHandler(setting.gameWorld);
+		lightRenderer.setAmbientLight(0.1f, 0.1f, 0.1f, 0.1f);
+		lightRenderer.setCulling(true);		
+		//lightRenderer.setBlur(false);
+		lightRenderer.setBlurNum(1);
+		// Light renderer setup end
+
+		batch = new SpriteBatch();
+		camera.update(true);
 	}
-	
+
+	/** Renders the game world */
 	public void render()
 	{
 		camera.update();
-		
+
 		Gdx.gl.glClearColor(0f,0f,0f,1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		
+
 		batch.setProjectionMatrix(gameProjection);
-		
+
+		batch.begin();
+
 		renderBG();
+
+		renderObjects();
+
+		renderLights();
 		
-		debugRenderer.render(setting.getWorld(), gameProjection);
+		batch.end();
+
+		//debugRenderer.render(setting.gameWorld, gameProjection);
 	}
-	
+
+	/** Handles the rendering for the background, including the grass and water */
+	// TODO Make the background rendering more than grass
 	private void renderBG()
 	{
-		//batch.setProjectionMatrix(normalProjection);
-		batch.begin();
-		batch.draw(ResourceHandler.background, 0, 0);
-		batch.end();
-		//batch.setProjectionMatrix(gameProjection);
+		batch.disableBlending();
+		batch.draw(Resources.background, 0, 0);
+		batch.enableBlending();
 	}
-	
+
+	/** Renders the objects in the world */
+	// TODO Replace with specific rendering methods to get correct layers ( i.e. people->houses->trees)
+	private void renderObjects()
+	{
+		// Iterates through all of the bodies in the physics world
+		Array<Body> bodiesArray = new Array<Body>();
+		setting.gameWorld.getBodies(bodiesArray);
+		Iterator<Body> bi = bodiesArray.iterator();
+		while(bi.hasNext()) {
+			Body body = bi.next();
+			Entity entity = (Entity) body.getUserData();
+			if(entity != null && entity.sprite != null) {
+				entity.sprite.draw(batch);
+			}
+		}
+
+	}
+
+	private void renderLights()
+	{
+		batch.end();
+		
+		lightRenderer.setCombinedMatrix(gameProjection);		
+		long time = System.nanoTime();
+
+		if(setting.stepped)
+			lightRenderer.update();
+		lightRenderer.render();
+
+		setting.aika += System.nanoTime() - time;
+
+		/* FONT */
+		batch.setProjectionMatrix(normalProjection);
+		batch.begin();
+
+		font.draw(batch, Integer.toString(Gdx.graphics.getFramesPerSecond())
+				+ " time used for shadow calculation:" +setting.aika / ++setting.times + "ns" , 0, 20);
+
+	}
+
+	/** Resizes the view and corrects the projection to the new screen size */
 	public void resize(int width, int height)
 	{
 		camera = new OrthographicCamera(Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
 		normalProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		gameProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
 	}
-	
+
+	/** 
+	 * Builds the light objects of all the Entites currently in the world
+	 * Only to be used when the Setting in reloaded from a save file
+	 */
+	public void buildLoadedLights()
+	{
+		// Iterates through all of the bodies in the physics world
+		Array<Body> bodiesArray = new Array<Body>();
+		setting.gameWorld.getBodies(bodiesArray);
+		Iterator<Body> bi = bodiesArray.iterator();
+		while(bi.hasNext()) {
+			Body body = bi.next();
+			Entity entity = (Entity) body.getUserData();
+			if(entity != null) {
+				System.out.println("Light Added!");
+				entity.addLight();
+			}
+		}
+	}
+
 }

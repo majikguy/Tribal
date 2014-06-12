@@ -14,11 +14,11 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 	public static final float UNIT_TO_PIX = 8f;
 	public static final float RAD_TO_DEG = 57.2957795f;
 
-	// Setting object, contains the actual game state objects.
+	/** Setting object, contains the actual game state objects. */
 	public Setting setting;
 
-	// Game Rendering object
-	public SettingRenderer renderer;
+	/** Game Rendering object */
+	public static SettingRenderer renderer;
 
 	@Override
 	public void create() {
@@ -27,10 +27,12 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 		if(!loadState())
 		{
 			// If no save is found, creates a new setting
-			setting = Setting.newSetting();
+			setting = Setting.getNewSetting();
+			setting.environment.addTestEntities();
 		}
 		
 		renderer = new SettingRenderer(setting);
+		renderer.buildLoadedLights();
 		
 		setting.environment.testInt = (int)(Math.random() * 1000);
 		System.out.println("TEST INT!!: " + setting.environment.testInt);
@@ -48,7 +50,7 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 	public void render() {
 
 		renderer.render();
-
+		
 		setting.update();
 	}
 
@@ -71,6 +73,9 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 
 	}
 
+	/**
+	 * Saves the game state in a Json file
+	 */
 	public void saveState()
 	{
 		FileHandle save = Gdx.files.local("save/save.json");
@@ -78,6 +83,10 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 		System.out.println("Saved State!");
 	}
 
+	/** Attempts the load the state of the game from a save file
+	 * 
+	 * @return True if a valid save file could be read, false otherwise
+	 */
 	public boolean loadState()
 	{
 		try
@@ -91,6 +100,8 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 		}
 		catch(Exception e)
 		{
+			FileHandle errorLog = Gdx.files.local("save/error.log");
+			errorLog.writeString(e.toString(), false);
 			System.out.println("No valid save found!");
 			return false;
 		}

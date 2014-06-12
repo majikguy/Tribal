@@ -1,12 +1,20 @@
 {
-entity: {
-	posX: -14.451257,
-	sprite: {
-		x: -14.451257,
-		vertices: [ 0, 0, -1.7014117E38, 0, 0, 0, 0, -1.7014117E38, 0, 0, 0, 0, -1.7014117E38, 0, 0, 0, 0, -1.7014117E38, 0, 0 ]
-	}
-},
 environment: {
-	testInt: 362
+	entities: [
+		{
+			size: 2,
+			posX: 52.504993,
+			posY: 29.53228,
+			angle: -110.0772
+		},
+		{
+			class: com.knightlight.tribal.setting.EntityCampfire,
+			size: 3,
+			posX: 50,
+			posY: 30,
+			lightDistance: 15.492486
+		}
+	],
+	testInt: 891
 }
 }
