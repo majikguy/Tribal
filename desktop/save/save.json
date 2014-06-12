@@ -1,20 +1,36 @@
 {
-environment: {
-	entities: [
-		{
-			size: 2,
-			posX: 52.504993,
-			posY: 29.53228,
-			angle: -110.0772
-		},
+tribe: {
+	structures: [
 		{
 			class: com.knightlight.tribal.setting.EntityCampfire,
 			size: 3,
-			posX: 50,
-			posY: 30,
-			lightDistance: 15.492486
+			position: {
+				x: 50,
+				y: 30
+			},
+			lightDistance: 23.331257
+		},
+		{
+			class: com.knightlight.tribal.tribe.EntityHut,
+			size: 7,
+			position: {
+				x: 57,
+				y: 37
+			},
+			angle: 0.7853982
 		}
 	],
-	testInt: 891
-}
+	residents: [
+		{
+			class: com.knightlight.tribal.tribe.EntityTribesman,
+			size: 2,
+			position: {
+				x: 52.111427,
+				y: 27.701868
+			},
+			angle: -1.8425456
+		}
+	]
+},
+environment: {}
 }

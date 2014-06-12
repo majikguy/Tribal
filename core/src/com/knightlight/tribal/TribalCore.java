@@ -7,12 +7,15 @@ import com.badlogic.gdx.files.FileHandle;
 import com.knightlight.tribal.setting.Setting;
 
 public class TribalCore extends InputAdapter implements ApplicationListener {
+	
+	public static final boolean DEBUG = false;
 
-	// Conversion units for world units
-	// Needed for Box2D
+	// Conversion units for Box2D world units
+	// VERY helpful
 	public static final float PIX_TO_UNIT = 1/8f;
 	public static final float UNIT_TO_PIX = 8f;
 	public static final float RAD_TO_DEG = 57.2957795f;
+	public static final float DEG_TO_RAD = 0.0174532925f;
 
 	/** Setting object, contains the actual game state objects. */
 	public Setting setting;
@@ -28,14 +31,10 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 		{
 			// If no save is found, creates a new setting
 			setting = Setting.getNewSetting();
-			setting.environment.addTestEntities();
 		}
 		
 		renderer = new SettingRenderer(setting);
 		renderer.buildLoadedLights();
-		
-		setting.environment.testInt = (int)(Math.random() * 1000);
-		System.out.println("TEST INT!!: " + setting.environment.testInt);
 
 	}
 
@@ -56,20 +55,22 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
+		// TODO Look into more
+		saveState();
 
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
+		// TODO Investigate, most likely unneeded
 
 	}
 
 	@Override
-	public void dispose() {
-		// TODO Auto-generated method stub
-		saveState();
+	public void dispose() 
+	{
+		// TODO Look into adding dispose methods in the Setting.
+		// 	Possibly unneeded, since it runs lean and only disposes on quit.
 
 	}
 

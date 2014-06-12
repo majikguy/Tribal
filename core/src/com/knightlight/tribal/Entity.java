@@ -1,15 +1,9 @@
 package com.knightlight.tribal;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class Entity {
@@ -23,7 +17,7 @@ public class Entity {
 	public transient Sprite sprite;
 
 	/** The location of the Entity */
-	protected float posX, posY;
+	protected Vector2 position;
 
 	/** The rotational angle of the Entity, in radians */
 	protected float angle;
@@ -45,9 +39,9 @@ public class Entity {
 	 */
 	public Entity(float x, float y)
 	{
-		posX = x; posY = y;
+		position = new Vector2(x, y);
 		angle = 0;
-		size = 2f;
+		size = 1f;
 	}
 
 	/**
@@ -63,6 +57,21 @@ public class Entity {
 		addToWorld(w);
 		addSprite();
 		return this;
+	}
+	
+	/** 
+	 * Updates the position and logic of the Entity, called every World update 
+	 * Base Entity simply updates the positions of the different component objects of the Entity
+	 */
+	public void update()
+	{
+		// TODO Add check if the Entity moved, only update sprite if it did. Saves a lot of time.
+		// Updates the sprite position to the body
+		position.set(body.getPosition());
+		angle = body.getAngle();
+		
+		sprite.setRotation(angle * TribalCore.RAD_TO_DEG);
+		sprite.setCenter(position.x, position.y);
 	}
 
 	/**
@@ -84,12 +93,7 @@ public class Entity {
 	 */
 	protected void addBody(World w)
 	{
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(posX, posY);
-		bodyDef.angle = angle;
-		
-		body = w.createBody(bodyDef);
+		//To be overridden!
 	}
 
 	/** 
@@ -98,23 +102,7 @@ public class Entity {
 	 */
 	protected void addFixture()
 	{
-		// Create a circle shape and set its radius to 6
-		CircleShape circle = new CircleShape();
-		circle.setRadius(getSize()/2);
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = circle;
-		fixtureDef.density = 0.5f; 
-		fixtureDef.friction = 0.4f;
-		fixtureDef.restitution = 0.1f;
-
-		Fixture fix = body.createFixture(fixtureDef);
-
-		body.setLinearDamping(1f);
-
-		circle.dispose();
-
-		fixture = fix;
+		//To be overridden!
 	}
 
 	/**
@@ -122,11 +110,7 @@ public class Entity {
 	 */
 	protected void addSprite()
 	{
-		Sprite s = new Sprite(Resources.dude);
-		s.setSize(getSize(), getSize());
-		s.setOriginCenter();
-		s.setCenter(posX, posY);
-		sprite = s;
+		//To be overridden!
 	}
 
 	/**
@@ -136,32 +120,8 @@ public class Entity {
 	 */
 	public Entity addLight() 
 	{
-		/* NO LIGHT */return this;
-	}
-
-	/** Updates the position and logic of the Entity, called every World update */
-	public void update()
-	{
-		// Updates the sprite position to the body
-		Vector2 bodyPos = body.getPosition();
-		posX = bodyPos.x;
-		posY = bodyPos.y;
-		angle = body.getAngle();
-		
-		sprite.setRotation(body.getAngle() * TribalCore.RAD_TO_DEG);
-		sprite.setCenter(bodyPos.x, bodyPos.y);
-
-
-		if(Gdx.input.isKeyPressed(Keys.A))
-			body.applyLinearImpulse(-0.8f, 0, getX(), getY(), true);
-		if(Gdx.input.isKeyPressed(Keys.W))
-			body.applyLinearImpulse(0, 0.8f, getX(), getY(), true);
-		if(Gdx.input.isKeyPressed(Keys.D))
-			body.applyLinearImpulse(0.8f, 0, getX(), getY(), true);
-		if(Gdx.input.isKeyPressed(Keys.S))
-			body.applyLinearImpulse(0, -0.8f, getX(), getY(), true);
-		if(Gdx.input.isKeyPressed(Keys.SPACE))
-			setPosition(10f, 10f);
+		//To be overridden!
+		return this;
 	}
 
 	/**
@@ -169,35 +129,24 @@ public class Entity {
 	 * @param x - the x position to set it to
 	 * @param y - the y position to set it to
 	 */
-	public void setPosition(float x, float y)
+	public void setPosition(Vector2 pos)
 	{
 
-		posX = x; posY = y;
+		position.set(pos);
 		angle = body.getAngle();
 		
 		sprite.setRotation(angle * TribalCore.RAD_TO_DEG);
-		sprite.setCenter(x, y);
+		sprite.setCenter(position.x, position.y);
 		
 		if(body != null)
 		{
-			body.setTransform(new Vector2(x, y), angle);
+			body.setTransform(position, angle);
 		}
 	}
 
-	/**
-	 * @return the x position of the entity
-	 */
-	public float getX()
+	public Vector2 getPosition()
 	{
-		return posX;
-	}
-
-	/**
-	 * @return the y position of the entity
-	 */
-	public float getY()
-	{
-		return posY;
+		return position;
 	}
 
 	public float getSize()

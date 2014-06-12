@@ -4,38 +4,70 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.physics.box2d.World;
 import com.knightlight.tribal.Entity;
-import com.knightlight.tribal.setting.EntityCampfire;
 
+/**
+ * Manages the resources, terrain, and non-tribal Entities in the Environment
+ * @author majikguy
+ *
+ */
 public class Environment {
 	
-	// Box2D world object from the Setting
-	// 	transient to prevent serialization and crashing due to it
-	transient private World world;
+	/** Box2D world object from the Setting
+	* 	transient to prevent serialization and crashing due to it */
+	transient private World gameWorld;
 	
-	public ArrayList<Entity> entities;
-	
-	public int testInt;
+	/** ArrayLists containing the Entities in the Environment */
+	public ArrayList<Entity> trees, wildlife;
 
+	/**
+	 * Creates basic setup for loaded or created Environments
+	 */
 	private Environment() {
 		
-		entities = new ArrayList<Entity>();
+		trees = new ArrayList<Entity>();
+		wildlife = new ArrayList<Entity>();
 	}
 	
+	/**
+	 * Basic constructor
+	 * @param w - The World to add the Environment to
+	 */
 	public Environment(World w)
 	{
 		this();
-		world = w;
+		gameWorld = w;
 	}
 	
-	public void addTestEntities() {
-		entities.add(new Entity(40, 10).build(world));
-		entities.add(new EntityCampfire(50, 30).build(world));
-	}
-	
+	/**
+	 * Rebuilds the Environment after being loaded
+	 * @param w - The World to be built in
+	 */
 	public void rebuild(World w)
 	{
-		world = w;
-		for(Entity e : entities)
-			e.build(world);
+		gameWorld = w;
+		for(Entity e : trees)
+			e.build(gameWorld);
+		for(Entity e : wildlife)
+			e.build(gameWorld);
+	}
+	
+	/**
+	 * Updates the game logic for each governed Entity
+	 */
+	public void update()
+	{
+		for(Entity e : trees)
+			e.update();
+		for(Entity e : wildlife)
+			e.update();
+	}
+	
+	/**
+	 * Builds a tribe for testing purposes
+	 * Called if a save is not loaded
+	 */
+	public void makeTestEnvironment() 
+	{
+		//TODO
 	}
 }

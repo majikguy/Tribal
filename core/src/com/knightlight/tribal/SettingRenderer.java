@@ -59,7 +59,7 @@ public class SettingRenderer
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
 		lightRenderer = new RayHandler(setting.gameWorld);
-		lightRenderer.setAmbientLight(0.1f, 0.1f, 0.1f, 0.1f);
+		lightRenderer.setAmbientLight(0.1f, 0.1f, 0.1f, 1f);
 		lightRenderer.setCulling(true);		
 		//lightRenderer.setBlur(false);
 		lightRenderer.setBlurNum(1);
@@ -89,7 +89,8 @@ public class SettingRenderer
 		
 		batch.end();
 
-		//debugRenderer.render(setting.gameWorld, gameProjection);
+		if(TribalCore.DEBUG)
+			debugRenderer.render(setting.gameWorld, gameProjection);
 	}
 
 	/** Handles the rendering for the background, including the grass and water */
@@ -136,8 +137,9 @@ public class SettingRenderer
 		batch.setProjectionMatrix(normalProjection);
 		batch.begin();
 
-		font.draw(batch, Integer.toString(Gdx.graphics.getFramesPerSecond())
-				+ " time used for shadow calculation:" +setting.aika / ++setting.times + "ns" , 0, 20);
+		if(TribalCore.DEBUG)
+			font.draw(batch, Integer.toString(Gdx.graphics.getFramesPerSecond()) 
+					+ " time used for shadow calculation:" +setting.aika / ++setting.times + "ns" , 0, 20);
 
 	}
 
@@ -163,7 +165,6 @@ public class SettingRenderer
 			Body body = bi.next();
 			Entity entity = (Entity) body.getUserData();
 			if(entity != null) {
-				System.out.println("Light Added!");
 				entity.addLight();
 			}
 		}

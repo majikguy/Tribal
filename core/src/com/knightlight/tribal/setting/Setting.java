@@ -1,45 +1,75 @@
 package com.knightlight.tribal.setting;
 
-import java.util.Iterator;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
-import com.knightlight.tribal.Entity;
 import com.knightlight.tribal.environment.Environment;
+import com.knightlight.tribal.tribe.Tribe;
 
 public class Setting {
-	// Environment handler
-	public Environment environment;
-
+	
 	/** Box2D World object
 	 * 	transient to prevent it from being serialized and crashing
 	 */
 	transient public World gameWorld;
+	
+	/** Environment Handler */
+	public Environment environment;
+	
+	/** Tribe Handler */
+	public Tribe tribe;
 
 	/** boolean representing whether or not the World just stepped */
 	transient public boolean stepped = true;
-	// Box2D fields end
 
-	private Setting() {/*DOES NOTHING*/}
+	/**
+	 * Creates basic setup required for both creation and loading
+	 */
+	private Setting() {/*DOES NOTHING YET*/}
 
+	/**
+	 * Creates a new Setting object
+	 * @param world - The World to attach to the Setting
+	 */
 	private Setting(World world)
 	{
 		gameWorld = world;
-		environment = new Environment(gameWorld);
 	}
 
-	/** Factory method for creating a new Setting --
-	 * Required to prevent issues with serialization and the 0 argument constructor */
+	/** 
+	 * Factory method for creating a new Setting
+	 * Also attaches an Environment and a Tribe
+	 * Required to prevent issues with serialization and the 0 argument constructor 
+	 */
 	public static Setting getNewSetting()
 	{
+		//Create the World and the Setting object
 		World world = new World(new Vector2(0, 0), true);
 		Setting newSetting = new Setting(world);
+		
+		//Attach a new Environment and populate it
+		newSetting.environment = new Environment(world);
+		newSetting.environment.makeTestEnvironment();
+		
+		//Attach a new Tribe and populate it
+		newSetting.tribe = new Tribe(world);
+		newSetting.tribe.makeTestTribe();
 
 		return newSetting;
+	}
+	
+	/** Loads a save file and builds a new Setting from the data */
+	public static Setting buildFromJson(String saveState)
+	{
+		Json save = new Json();
+		Setting loadedSetting = save.fromJson(Setting.class, saveState);
+		loadedSetting.gameWorld = new World(new Vector2(0, 0), true);
+
+		loadedSetting.environment.rebuild(loadedSetting.gameWorld);
+		loadedSetting.tribe.rebuild(loadedSetting.gameWorld);
+
+		return loadedSetting;
 	}
 
 	/** Updates the world objects and simulation logic */
@@ -50,16 +80,8 @@ public class Setting {
 
 		if(stepped)
 		{
-			Array<Body> bodiesArray = new Array<Body>();
-			gameWorld.getBodies(bodiesArray);
-			Iterator<Body> bi = bodiesArray.iterator();
-			while(bi.hasNext()) {
-				Body body = bi.next();
-				Entity entity = (Entity) body.getUserData();
-				if(entity != null) {
-					entity.update();
-				}
-			}
+			environment.update();
+			tribe.update();
 		}
 	}
 
@@ -87,18 +109,6 @@ public class Setting {
 			stepped = true;
 		}
 		return stepped;
-	}
-
-	/** Loads a save file and builds a new Setting from the data */
-	public static Setting buildFromJson(String saveState)
-	{
-		Json save = new Json();
-		Setting loadedSetting = save.fromJson(Setting.class, saveState);
-		loadedSetting.gameWorld = new World(new Vector2(0, 0), true);
-
-		loadedSetting.environment.rebuild(loadedSetting.gameWorld);
-
-		return loadedSetting;
 	}
 
 	/** Builds a Json file representing the state of the Setting */
