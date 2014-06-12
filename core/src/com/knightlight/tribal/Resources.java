@@ -11,6 +11,8 @@ public class Resources {
 	
 	public static final Texture square = new Texture(Gdx.files.internal("sprites/square.png"));
 	
+	public static final Texture triangle = new Texture(Gdx.files.internal("sprites/triangle.png"));
+	
 	public static final Texture campfire = new Texture(Gdx.files.internal("sprites/campfire.png"));
 	
 }

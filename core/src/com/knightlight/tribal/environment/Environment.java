@@ -68,6 +68,14 @@ public class Environment {
 	 */
 	public void makeTestEnvironment() 
 	{
-		//TODO
+		trees.add(new EntityTree(65, 30).build(gameWorld));
+		trees.add(new EntityTree(20, 10).build(gameWorld));
+		trees.add(new EntityTree(0, 40).build(gameWorld));
+		trees.add(new EntityTree(10, 50).build(gameWorld));
+		trees.add(new EntityTree(10, 33).build(gameWorld));
+		trees.add(new EntityTree(47, 20).build(gameWorld));
+		trees.add(new EntityTree(30, 20).build(gameWorld));
+		trees.add(new EntityTree(38, 60).build(gameWorld));
+		trees.add(new EntityTree(70, 40).build(gameWorld));
 	}
 }

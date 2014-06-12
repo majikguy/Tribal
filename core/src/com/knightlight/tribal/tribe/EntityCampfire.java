@@ -1,4 +1,4 @@
-package com.knightlight.tribal.setting;
+package com.knightlight.tribal.tribe;
 
 import box2dLight.Light;
 import box2dLight.PointLight;

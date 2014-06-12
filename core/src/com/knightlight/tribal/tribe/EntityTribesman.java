@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.knightlight.tribal.Entity;
 import com.knightlight.tribal.Resources;
+import com.knightlight.tribal.TribalCore;
 
 /**
  * EntityTribesman objects are the people that make up the tribe
@@ -54,6 +55,10 @@ public class EntityTribesman extends Entity {
 			body.applyLinearImpulse(0, -0.8f, position.x, position.y, true);
 		if(Gdx.input.isKeyPressed(Keys.SPACE))
 			setPosition(new Vector2(10f, 10f));
+		if(Gdx.input.isTouched())
+		{
+			setPosition(new Vector2( Gdx.input.getX() * TribalCore.PIX_TO_UNIT, (Gdx.graphics.getHeight() - Gdx.input.getY()) * TribalCore.PIX_TO_UNIT ) );
+		}
 	}
 	
 	/**

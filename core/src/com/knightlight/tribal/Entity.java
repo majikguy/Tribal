@@ -28,7 +28,7 @@ public class Entity {
 	/**
 	 * Internal use only
 	 */
-	protected Entity() {	}
+	protected Entity() {/*Nothing yet!*/}
 
 	/**
 	 * Standard non-graphical constructor for an Entity
@@ -39,6 +39,7 @@ public class Entity {
 	 */
 	public Entity(float x, float y)
 	{
+		this();
 		position = new Vector2(x, y);
 		angle = 0;
 		size = 1f;
@@ -58,20 +59,27 @@ public class Entity {
 		addSprite();
 		return this;
 	}
-	
+
 	/** 
 	 * Updates the position and logic of the Entity, called every World update 
 	 * Base Entity simply updates the positions of the different component objects of the Entity
 	 */
 	public void update()
 	{
-		// TODO Add check if the Entity moved, only update sprite if it did. Saves a lot of time.
-		// Updates the sprite position to the body
-		position.set(body.getPosition());
-		angle = body.getAngle();
-		
-		sprite.setRotation(angle * TribalCore.RAD_TO_DEG);
-		sprite.setCenter(position.x, position.y);
+		// Check if the Entity moved, only update sprite if it did.
+		Vector2 bodyPos = body.getPosition();
+		float bodyAngle = body.getAngle();
+		boolean moved = !position.equals(bodyPos) || angle != bodyAngle;
+
+		if(moved)
+		{
+			// Updates the sprite position to the body
+			position.set(body.getPosition());
+			angle = bodyAngle;
+
+			sprite.setRotation(angle * TribalCore.RAD_TO_DEG);
+			sprite.setCenter(position.x, position.y);
+		}
 	}
 
 	/**
@@ -134,14 +142,12 @@ public class Entity {
 
 		position.set(pos);
 		angle = body.getAngle();
-		
+
 		sprite.setRotation(angle * TribalCore.RAD_TO_DEG);
 		sprite.setCenter(position.x, position.y);
 		
-		if(body != null)
-		{
-			body.setTransform(position, angle);
-		}
+		body.setTransform(position, angle);
+		body.setLinearVelocity(0f, 0f);
 	}
 
 	public Vector2 getPosition()

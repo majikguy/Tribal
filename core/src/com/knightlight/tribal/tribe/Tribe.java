@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.physics.box2d.World;
 import com.knightlight.tribal.Entity;
-import com.knightlight.tribal.setting.EntityCampfire;
 
 /**
  * Manages the resources, buildings, and residents in a tribe
