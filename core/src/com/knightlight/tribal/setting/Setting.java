@@ -1,9 +1,12 @@
 package com.knightlight.tribal.setting;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Json;
+import com.knightlight.tribal.TribalCore;
 import com.knightlight.tribal.environment.Environment;
 import com.knightlight.tribal.tribe.Tribe;
 
@@ -13,6 +16,15 @@ public class Setting {
 	 * 	transient to prevent it from being serialized and crashing
 	 */
 	transient public World gameWorld;
+	
+	/** Default size of the world, is scaled by the aspect ratio when creating a new Setting */
+	public final static float DEFAULT_WIDTH = 96f, DEFAULT_HEIGHT = 160f;
+	
+	/** The size of the world in units */
+	public float width, height;
+	
+	/** The Random object for generation */
+	private Random random;
 	
 	/** Environment Handler */
 	public Environment environment;
@@ -32,9 +44,11 @@ public class Setting {
 	 * Creates a new Setting object
 	 * @param world - The World to attach to the Setting
 	 */
-	private Setting(World world)
+	private Setting(World world, float w, float h)
 	{
 		gameWorld = world;
+		width = w;
+		height = h;
 	}
 
 	/** 
@@ -42,18 +56,22 @@ public class Setting {
 	 * Also attaches an Environment and a Tribe
 	 * Required to prevent issues with serialization and the 0 argument constructor 
 	 */
-	public static Setting getNewSetting()
+	public static Setting getNewSetting(float aspectRatio)
 	{
 		//Create the World and the Setting object
 		World world = new World(new Vector2(0, 0), true);
-		Setting newSetting = new Setting(world);
+		Setting newSetting = new Setting(world, DEFAULT_WIDTH * aspectRatio, DEFAULT_HEIGHT * aspectRatio);
+		
+		newSetting.random = new Random();
+		if(TribalCore.DEBUG)
+			newSetting.random.setSeed(TribalCore.SEED);
 		
 		//Attach a new Environment and populate it
 		newSetting.environment = new Environment(world);
 		newSetting.environment.makeTestEnvironment();
 		
 		//Attach a new Tribe and populate it
-		newSetting.tribe = new Tribe(world);
+		newSetting.tribe = new Tribe(world, newSetting.environment);
 		newSetting.tribe.makeTestTribe();
 
 		return newSetting;
@@ -67,7 +85,7 @@ public class Setting {
 		loadedSetting.gameWorld = new World(new Vector2(0, 0), true);
 
 		loadedSetting.environment.rebuild(loadedSetting.gameWorld);
-		loadedSetting.tribe.rebuild(loadedSetting.gameWorld);
+		loadedSetting.tribe.rebuild(loadedSetting.gameWorld, loadedSetting.environment);
 
 		return loadedSetting;
 	}

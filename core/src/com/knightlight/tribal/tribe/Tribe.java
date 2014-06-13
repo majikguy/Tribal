@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.physics.box2d.World;
 import com.knightlight.tribal.Entity;
+import com.knightlight.tribal.environment.Environment;
 
 /**
  * Manages the resources, buildings, and residents in a tribe
@@ -12,9 +13,12 @@ import com.knightlight.tribal.Entity;
  */
 public class Tribe {
 	
-	/** Box2D world object from the Setting
-	* 	transient to prevent serialization and crashing due to it */
+	/** Box2D world object from the Setting */
 	transient private World gameWorld;
+	
+	/** Reference to the Tribe's Environment
+	 * (Transient to prevent duplication in the save */
+	transient private Environment environment;
 
 	/** ArrayLists containing the Entities that make up the Tribe */
 	public ArrayList<Entity> structures, residents;
@@ -31,18 +35,20 @@ public class Tribe {
 	 * Basic constructor
 	 * @param w - The World to add the Tribe to
 	 */
-	public Tribe(World w) {
+	public Tribe(World w, Environment e) {
 		this();
 		gameWorld = w;
+		environment = e;
 	}
 	
 	/**
 	 * Rebuilds the Tribe after being loaded
 	 * @param w - The World to be built in
 	 */
-	public void rebuild(World w)
+	public void rebuild(World w, Environment enviro)
 	{
 		gameWorld = w;
+		environment = enviro;
 		
 		for(Entity e : structures)
 			e.build(gameWorld);

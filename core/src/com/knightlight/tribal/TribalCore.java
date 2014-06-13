@@ -8,12 +8,16 @@ import com.knightlight.tribal.setting.Setting;
 
 public class TribalCore extends InputAdapter implements ApplicationListener {
 	
+	/** Tag for whether debug functions should run */
 	public static final boolean DEBUG = false;
+	
+	/** The hardcoded seed to use for generation during debugging */
+	public static final long SEED = -3037696267990719665L;
 
 	// Conversion units for Box2D world units
 	// VERY helpful
-	public static final float PIX_TO_UNIT = 1/8f;
-	public static final float UNIT_TO_PIX = 8f;
+	public static final float PIX_TO_UNIT = 1/32f;
+	public static final float UNIT_TO_PIX = 32f;
 	public static final float RAD_TO_DEG = 57.2957795f;
 	public static final float DEG_TO_RAD = 0.0174532925f;
 
@@ -30,7 +34,9 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 		if(!loadState())
 		{
 			// If no save is found, creates a new setting
-			setting = Setting.getNewSetting();
+			float aspectRatio = (float)Gdx.graphics.getWidth() / (float)Gdx.graphics.getHeight();
+			System.out.println("Aspect Ratio: " + aspectRatio);
+			setting = Setting.getNewSetting(aspectRatio);
 		}
 		
 		renderer = new SettingRenderer(setting);
@@ -55,7 +61,7 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void pause() {
-		// TODO Look into more
+		// TODO Look into more uses
 		saveState();
 
 	}

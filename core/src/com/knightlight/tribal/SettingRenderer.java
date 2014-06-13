@@ -46,10 +46,6 @@ public class SettingRenderer
 	{
 		setting = s;
 
-		camera = new OrthographicCamera(Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
-		normalProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		gameProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
-
 		debugRenderer = new Box2DDebugRenderer();
 
 		font = new BitmapFont();
@@ -59,14 +55,13 @@ public class SettingRenderer
 		RayHandler.setGammaCorrection(true);
 		RayHandler.useDiffuseLight(true);
 		lightRenderer = new RayHandler(setting.gameWorld);
-		lightRenderer.setAmbientLight(0.1f, 0.1f, 0.1f, 1f);
+		lightRenderer.setAmbientLight(0.08f, 0.08f, 0.08f, 0.1f);
 		lightRenderer.setCulling(true);		
 		//lightRenderer.setBlur(false);
 		lightRenderer.setBlurNum(1);
 		// Light renderer setup end
 
 		batch = new SpriteBatch();
-		camera.update(true);
 	}
 
 	/** Renders the game world */
@@ -86,7 +81,7 @@ public class SettingRenderer
 		renderObjects();
 
 		renderLights();
-		
+
 		batch.end();
 
 		if(TribalCore.DEBUG)
@@ -98,32 +93,29 @@ public class SettingRenderer
 	private void renderBG()
 	{
 		batch.disableBlending();
-		batch.draw(Resources.background, 0, 0);
+		batch.draw(Resources.background, 0, 0, setting.height, setting.height);
 		batch.enableBlending();
 	}
 
-	/** Renders the objects in the world */
-	// TODO Replace with specific rendering methods to get correct layers ( i.e. people->houses->trees)
+	/** Renders the objects in the world in layers */
 	private void renderObjects()
 	{
-		// Iterates through all of the bodies in the physics world
-		Array<Body> bodiesArray = new Array<Body>();
-		setting.gameWorld.getBodies(bodiesArray);
-		Iterator<Body> bi = bodiesArray.iterator();
-		while(bi.hasNext()) {
-			Body body = bi.next();
-			Entity entity = (Entity) body.getUserData();
-			if(entity != null && entity.sprite != null) {
-				entity.sprite.draw(batch);
-			}
-		}
+		//Draws Entities starting from the lowest to the highest to get the layers correct
+		for(Entity e : setting.tribe.structures)
+			e.sprite.draw(batch);
+		for(Entity e : setting.tribe.residents)
+			e.sprite.draw(batch);
 
+		for(Entity e : setting.environment.wildlife)
+			e.sprite.draw(batch);
+		for(Entity e : setting.environment.trees)
+			e.sprite.draw(batch);
 	}
 
 	private void renderLights()
 	{
 		batch.end();
-		
+
 		lightRenderer.setCombinedMatrix(gameProjection);		
 		long time = System.nanoTime();
 
@@ -146,9 +138,10 @@ public class SettingRenderer
 	/** Resizes the view and corrects the projection to the new screen size */
 	public void resize(int width, int height)
 	{
-		camera = new OrthographicCamera(Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
+		camera = new OrthographicCamera(setting.width, setting.height);
 		normalProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		gameProjection.setToOrtho2D(0, 0, Gdx.graphics.getWidth()*TribalCore.PIX_TO_UNIT, Gdx.graphics.getHeight()*TribalCore.PIX_TO_UNIT);
+		gameProjection.setToOrtho2D(0, 0, setting.width, setting.height);
+		camera.update();
 	}
 
 	/** 

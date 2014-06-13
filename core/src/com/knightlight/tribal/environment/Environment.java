@@ -75,7 +75,7 @@ public class Environment {
 		trees.add(new EntityTree(10, 33).build(gameWorld));
 		trees.add(new EntityTree(47, 20).build(gameWorld));
 		trees.add(new EntityTree(30, 20).build(gameWorld));
-		trees.add(new EntityTree(38, 60).build(gameWorld));
-		trees.add(new EntityTree(70, 40).build(gameWorld));
+		trees.add(new EntityTree(38, 42).build(gameWorld));
+		trees.add(new EntityTree(70, 38).build(gameWorld));
 	}
 }

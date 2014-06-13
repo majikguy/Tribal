@@ -8,9 +8,9 @@ public class DesktopLauncher {
 
 	public static void main(String[] argv) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.title = "box2d lights test";
-		config.width = 800;
-		config.height = 480;
+		config.title = "Tribal";
+		config.width = 640;//800;
+		config.height = 960;//480;
 		config.samples = 4;
 		config.depth = 0;
 		config.vSyncEnabled = true;
