@@ -5,14 +5,27 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Resources {
 
-	public static final Texture background = new Texture(Gdx.files.internal("sprites/bg.png"));
+	public static Texture background;
 	
-	public static final Texture circle = new Texture(Gdx.files.internal("sprites/circle.png"));
+	public static Texture circle;
 	
-	public static final Texture square = new Texture(Gdx.files.internal("sprites/square.png"));
+	public static Texture square;
 	
-	public static final Texture triangle = new Texture(Gdx.files.internal("sprites/triangle.png"));
+	public static Texture triangle;
 	
-	public static final Texture campfire = new Texture(Gdx.files.internal("sprites/campfire.png"));
+	public static Texture campfire;
+	
+	public static void reloadResources()
+	{
+		background = new Texture(Gdx.files.internal("sprites/bg.png"));
+		
+		circle = new Texture(Gdx.files.internal("sprites/circle.png"));
+		
+		square = new Texture(Gdx.files.internal("sprites/square.png"));
+		
+		triangle = new Texture(Gdx.files.internal("sprites/triangle.png"));
+		
+		campfire = new Texture(Gdx.files.internal("sprites/campfire.png"));
+	}
 	
 }

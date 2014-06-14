@@ -1,7 +1,7 @@
 {
 random: {
 	seed: {
-		value: 76005283035871
+		value: 58504304742488
 	}
 },
 width: 64,
@@ -15,7 +15,7 @@ tribe: {
 				x: 50,
 				y: 30
 			},
-			lightDistance: 23.942303
+			lightDistance: 23.035524
 		},
 		{
 			class: com.knightlight.tribal.tribe.EntityHut,
@@ -24,7 +24,7 @@ tribe: {
 				x: 57,
 				y: 37
 			},
-			angle: 0.78539824
+			angle: 0.7853982
 		}
 	],
 	residents: [
@@ -32,10 +32,10 @@ tribe: {
 			class: com.knightlight.tribal.tribe.EntityTribesman,
 			size: 2,
 			position: {
-				x: 47.292618,
-				y: 28.974014
+				x: 48.790497,
+				y: 25.40623
 			},
-			angle: 22.552294
+			angle: -1.8896338
 		}
 	]
 },

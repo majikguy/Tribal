@@ -67,12 +67,13 @@ public class SettingRenderer
 	/** Renders the game world */
 	public void render()
 	{
+		camera.setToOrtho(false, setting.width, setting.height);
 		camera.update();
 
 		Gdx.gl.glClearColor(0f,0f,0f,1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		batch.setProjectionMatrix(gameProjection);
+		batch.setProjectionMatrix(camera.combined);
 
 		batch.begin();
 

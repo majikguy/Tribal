@@ -1,6 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<string name="app_name">Tribal</string>
+	<string name="app_description">Tribal Live Wallpaper</string>
 
-    <string name="app_name">Tribal</string>
+	<string name="settings_generalTitle">Preferences</string>
+	<string name="settings_extraTitle">Extra</string>
 
+	<string name="settings_checkBoxTestTitle">CheckBox test</string>
+	<string name="settings_checkBoxTestSummary">Checked = red color of touch</string>
+
+	<string name="settings_listTestTitle">List title</string>
+
+	<string-array name="settings_listTestEntries">
+		<item>Entry 1</item>
+		<item>Entry 2</item>
+		<item>Entry 3</item>
+		<item>Entry 4</item>
+	</string-array>
+
+	<string-array name="settings_listTestEntryValues">
+		<item>0</item>
+		<item>1</item>
+		<item>2</item>
+		<item>3</item>
+	</string-array>
+
+	<string name="settings_button_otherAppsTitle">Other Apps from author</string>
+	<string name="settings_button_supportTitle">Need help?</string>
+
+	<!-- SYSTEM -->
+
+	<string name="settings_toast_unavailable">Google Play is unavailable</string>
+
+	<string name="service_name">Ship Battle</string>
+	<string name="support_email">your@gmail.com</string>
+	<string name="url_more">market://search?q=pub:XdebugX</string>
 </resources>

@@ -7,10 +7,10 @@ import com.badlogic.gdx.files.FileHandle;
 import com.knightlight.tribal.setting.Setting;
 
 public class TribalCore extends InputAdapter implements ApplicationListener {
-	
+
 	/** Tag for whether debug functions should run */
-	public static final boolean DEBUG = false;
-	
+	public static final boolean DEBUG = true;
+
 	/** The hardcoded seed to use for generation during debugging */
 	public static final long SEED = -3037696267990719665L;
 
@@ -29,7 +29,9 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void create() {
-		
+
+		Resources.reloadResources();
+
 		// Attempts to load an existing game-state from a save file.
 		if(!loadState())
 		{
@@ -38,7 +40,7 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 			System.out.println("Aspect Ratio: " + aspectRatio);
 			setting = Setting.getNewSetting(aspectRatio);
 		}
-		
+
 		renderer = new SettingRenderer(setting);
 		renderer.buildLoadedLights();
 
@@ -46,7 +48,7 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 
 	@Override
 	public void resize(int width, int height) {
-		
+
 		renderer.resize(width, height);
 
 	}
@@ -54,9 +56,28 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 	@Override
 	public void render() {
 
+		limitFPS();
 		renderer.render();
-		
+
 		setting.update();
+	}
+
+	private long diff, start;
+	private final float targetFPS = 30f;
+	private final long targetDelay = 1000 / (long) targetFPS;
+
+	public void limitFPS() {
+		diff = System.currentTimeMillis() - start;
+
+		if (diff < targetDelay) {
+			try {
+				Thread.sleep(targetDelay - diff);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		start = System.currentTimeMillis();
 	}
 
 	@Override
@@ -77,6 +98,7 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 	{
 		// TODO Look into adding dispose methods in the Setting.
 		// 	Possibly unneeded, since it runs lean and only disposes on quit.
+		saveState();
 
 	}
 
@@ -85,9 +107,17 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 	 */
 	public void saveState()
 	{
-		FileHandle save = Gdx.files.local("save/save.json");
-		save.writeString(setting.toJson(), false);
-		System.out.println("Saved State!");
+		try
+		{
+			FileHandle save = Gdx.files.local("save/save.json");
+			save.writeString(setting.toJson(), false);
+			System.out.println("Saved State!");
+			Gdx.app.debug("SAVE", "STATE SAVED!");
+		}
+		catch(Exception e)
+		{
+			System.out.println("Failed to Save!");
+		}
 	}
 
 	/** Attempts the load the state of the game from a save file
@@ -99,9 +129,9 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 		try
 		{
 			FileHandle save = Gdx.files.local("save/save.json");
-			
+
 			setting = Setting.buildFromJson(save.readString());
-			
+
 			System.out.println("Setting Loaded!");
 			return true;
 		}
@@ -111,6 +141,25 @@ public class TribalCore extends InputAdapter implements ApplicationListener {
 			errorLog.writeString(e.toString(), false);
 			System.out.println("No valid save found!");
 			return false;
+		}
+	}
+
+	/**
+	 * Deletes the save file to make a new game
+	 */
+	public void dumpState()
+	{
+		try
+		{
+			FileHandle save = Gdx.files.local("save/save.json");
+			save.delete();
+			System.out.println("Save Deleted!");
+		}
+		catch(Exception e)
+		{
+			FileHandle errorLog = Gdx.files.local("save/error.log");
+			errorLog.writeString(e.toString(), false);
+			System.out.println("No Save to Delete!");
 		}
 	}
 
